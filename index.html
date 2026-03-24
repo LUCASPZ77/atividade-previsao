@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxHouse | Imobiliária Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #020617;
+            --accent: #38bdf8;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --sun-yellow: #facc15;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            background-image: radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.08), transparent 40%);
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        @media (min-width: 768px) {
+            header { flex-direction: row; justify-content: space-between; padding: 20px 8%; }
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+
+        .weather-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+        }
+
+        #weather-icon { 
+            width: 35px; 
+            height: 35px; 
+            filter: drop-shadow(0 0 5px var(--sun-yellow)) brightness(1.2);
+        }
+
+        .weather-info { line-height: 1.2; text-align: left; }
+        .weather-info span { display: block; font-size: 0.65rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; }
+        .weather-info b { font-size: 1rem; }
+
+        /* --- BUSCA --- */
+        .search-section { padding: 40px 20px; text-align: center; }
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        /* --- GRID --- */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+
+        .card.hidden { display: none; }
+        .house-img { width: 100%; height: 220px; object-fit: cover; }
+        .info { padding: 20px; }
+        .price-tag { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin: 15px 0; display: block; }
+
+        .btn-reserve {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* --- MODAL E ANIMAÇÃO DE COMPRA --- */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #0f172a;
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--accent);
+            text-align: center;
+        }
+
+        .payment-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px; background: var(--card-bg); border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+        .tab.active { border-color: var(--accent); background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid var(--border); background: #1e293b; color: white; }
+
+        /* Spinner de Carregamento */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .success-msg { color: #4ade80; display: none; font-weight: 800; margin: 20px 0; animation: scaleUp 0.3s ease; }
+        @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .close-btn { margin-top: 10px; color: #94a3b8; cursor: pointer; display: block; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">LUX<span>HOUSE</span></div>
+        <div class="weather-widget">
+            <img id="weather-icon" src="" alt="">
+            <div class="weather-info">
+                <span id="city-name">Carregando...</span>
+                <b id="temp">--</b>°C
+            </div>
+        </div>
+    </header>
+
+    <div class="search-section">
+        <h1>Sua nova vista espera por você.</h1>
+        <input type="text" class="search-box" id="searchInput" placeholder="Pesquisar imóvel..." onkeyup="filterHouses()">
+    </div>
+
+    <div class="grid" id="houseGrid">
+        <div class="card" data-name="Mansão das Palmeiras">
+            <img src="casa1.jpg" class="house-img">
+            <div class="info">
+                <h3>Mansão das Palmeiras</h3>
+                <p>Jundiaí • 4 Quartos • Piscina</p>
+                <span class="price-tag">R$ 4.200.000</span>
+                <button class="btn-reserve" onclick="openModal('Mansão das Palmeiras')">RESERVAR</button>
+            </div>
+        </div>
+        <div class="card" data-name="Villa Contemporânea">
+            <img src="casa2.jpg" class="house-img">
+            <div class="info">
+                <h3>Villa Contemporânea</h3>
+                <p>Jundiaí • 3 Quartos • Design Moderno</p>
+                <span class="price-tag">R$ 2.850.000</span>
+                <button class="btn-reserve" onclick="openModal('Villa Contemporânea')">RESERVAR</button>
+            </div>
+        </div>
+        <div class="card" data-name="Loft Industrial Lux">
+            <img src="casa3.jpg" class="house-img">
+            <div class="info">
+                <h3>Loft Industrial Lux</h3>
+                <p>Jundiaí • 2 Quartos • Cobertura Duplex</p>
+                <span class="price-tag">R$ 1.600.000</span>
+                <button class="btn-reserve" onclick="openModal('Loft Industrial Lux')">RESERVAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentModal">
+        <div class="modal-content" id="modalBody">
+            <h2 id="modalTitle">Pagamento</h2>
+            <div id="formSection">
+                <div class="payment-tabs"><div class="tab active">CARTÃO</div><div class="tab">PIX</div></div>
+                <input type="text" placeholder="Número do Cartão">
+                <input type="text" placeholder="Nome do Titular">
+                <button class="btn-reserve" onclick="processPayment()">CONFIRMAR COMPRA</button>
+                <span class="close-btn" onclick="closeModal()">Cancelar</span>
+            </div>
+            <div class="loader" id="paymentLoader"></div>
+            <div class="success-msg" id="successMsg">✅ COMPRA REALIZADA COM SUCESSO!</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadWeather() {
+            const API_KEY = '84f9f4df4d69658239f25aa28c84f8b0';
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Jundiai,BR&units=metric&lang=pt_br&appid=${API_KEY}`);
+                const data = await res.json();
+                document.getElementById('city-name').innerText = data.name;
+                document.getElementById('temp').innerText = Math.round(data.main.temp);
+                
+                // Mapeando para ícone amarelo forçado (sol) se estiver limpo
+                const icon = data.weather[0].icon;
+                const iconUrl = icon.includes('d') ? 
+                    'https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/1st%20Set/Color/clear-day.png' : 
+                    `https://openweathermap.org/img/wn/${icon}@2x.png`;
+                
+                document.getElementById('weather-icon').src = iconUrl;
+            } catch (err) { console.log("Erro clima"); }
+        }
+
+        function filterHouses() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            for (let card of cards) {
+                let name = card.getAttribute('data-name').toLowerCase();
+                card.classList.toggle('hidden', !name.includes(input));
+            }
+        }
+
+        function openModal(name) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('paymentLoader').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function processPayment() {
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('paymentLoader').style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('paymentLoader').style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+                setTimeout(closeModal, 2500);
+            }, 2000);
+        }
+
+        function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
+
+        window.onload = loadWeather;
+    </script>
+</body>
+</html>
