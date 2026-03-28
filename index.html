@@ -3,297 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronForge - Sistema de Treinamento Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>IronForge PRO | Master Engine v5.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #adff2f;
-            --bg-dark: #0a0a0a;
-            --glass-bg: rgba(255, 255, 255, 0.07);
-            --text-light: #ffffff;
-            --transition: all 0.3s ease;
+            --bg: #050505;
+            --surface: #121212;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-dark); min-height: 100vh; color: var(--text-light); overflow-x: hidden; }
-
-        .background-overlay {
-            position: fixed; width: 100%; height: 100%;
-            background: radial-gradient(circle at 10% 20%, rgba(173, 255, 47, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, rgba(100, 50, 255, 0.1) 0%, transparent 40%);
-            z-index: -1;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; overflow-x: hidden; min-height: 100vh; }
 
         /* --- LOGIN --- */
-        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-box { background: var(--glass-bg); backdrop-filter: blur(25px); padding: 40px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; width: 100%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
-        header h1 { font-weight: 800; font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 5px; }
-        header h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(173, 255, 47, 0.4); }
-        header p { opacity: 0.5; font-size: 0.8rem; margin-bottom: 30px; letter-spacing: 2px; }
-
-        .input-group { position: relative; margin-bottom: 22px; text-align: left; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 14px 10px; background: rgba(255,255,255,0.03); border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1); color: white; outline: none; border-radius: 8px 8px 0 0;
-            transition: var(--transition);
+        #login-screen {
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: radial-gradient(circle at top right, #1a2e0a, #050505);
+            padding: 20px;
         }
-        .input-group label { position: absolute; left: 10px; top: 14px; transition: 0.3s; opacity: 0.4; pointer-events: none; }
-        .input-group input:focus ~ label, .input-group input:valid ~ label, .input-group select:focus ~ label { top: -18px; font-size: 0.7rem; color: var(--primary); opacity: 1; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        select option { background: #111; color: white; }
+        .login-card {
+            background: var(--surface); padding: 40px; border-radius: 30px; border: 1px solid var(--border);
+            width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
 
         /* --- DASHBOARD --- */
-        #dashboard { display: none; width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px 20px; animation: slideUp 0.6s ease-out; }
+        #dashboard { display: none; }
+        .top-nav {
+            padding: 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; background: rgba(5,5,5,0.9); backdrop-filter: blur(15px); z-index: 100;
+        }
+
+        .tab-content { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; animation: slideUp 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        /* --- CARDS DE TREINO --- */
+        .workout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 20px; }
+        .day-card {
+            background: var(--surface); border-radius: 24px; padding: 25px; border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .day-card h3 { color: var(--primary); font-family: 'Orbitron'; font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .exercise-item {
+            padding: 15px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,0.02);
+            border: 1px solid transparent; transition: var(--transition); cursor: pointer;
+        }
+        .exercise-item:hover { border-color: var(--primary); background: rgba(173, 255, 47, 0.05); }
+
+        /* --- ENCICLOPÉDIA --- */
+        .search-container { position: sticky; top: 80px; z-index: 90; padding: 10px 0; background: var(--bg); }
+        .search-bar { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid var(--border); background: var(--surface); color: white; font-size: 1rem; }
+        
+        .lib-card {
+            background: var(--surface); padding: 25px; border-radius: 20px; border: 1px solid var(--border);
+            margin-bottom: 15px; transition: var(--transition);
+        }
+        .lib-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .muscle-tag { font-size: 0.65rem; background: var(--primary); color: black; padding: 3px 8px; border-radius: 4px; font-weight: 900; text-transform: uppercase; }
+
+        /* --- MENU INFERIOR --- */
+        .bottom-bar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(15,15,15,0.95); backdrop-filter: blur(20px);
+            padding: 15px 45px; border-radius: 50px; display: flex; gap: 50px;
+            border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000;
+        }
+        .nav-btn { color: #555; font-size: 1.5rem; cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
+
+        /* --- FORM ELEMENTS --- */
+        select, input { width: 100%; padding: 15px; margin-top: 15px; border-radius: 12px; border: 1px solid var(--border); background: #000; color: white; }
+        .btn-primary { width: 100%; padding: 20px; margin-top: 25px; border-radius: 15px; border: none; background: var(--primary); color: black; font-weight: 900; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(173, 255, 47, 0.3); }
+
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .nav-tabs { display: flex; gap: 12px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; justify-content: center; }
-        .tab-btn { background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.05); color: white; padding: 12px 28px; cursor: pointer; border-radius: 14px; transition: var(--transition); white-space: nowrap; font-weight: 600; }
-        .tab-btn.active { background: var(--primary); color: black; border-color: var(--primary); box-shadow: 0 5px 15px rgba(173, 255, 47, 0.3); }
-
-        .content-section { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 35px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
-        
-        /* Treino Layout */
-        .workout-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        .weekly-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; }
-        .day-card { background: rgba(255,255,255,0.02); border-radius: 22px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-        .day-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
-        .day-name { color: var(--primary); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; }
-        .muscle-title { font-size: 1.3rem; margin: 5px 0 20px 0; }
-        
-        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .exercise-info b { font-size: 0.95rem; display: block; color: #fff; }
-        .exercise-info span { font-size: 0.75rem; opacity: 0.5; display: block; }
-        .badge { background: rgba(173, 255, 47, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(173, 255, 47, 0.2); }
-
-        /* Evolução */
-        .chart-container { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; }
-        .evolution-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; }
-        .metric-box { background: var(--glass-bg); padding: 15px; border-radius: 15px; text-align: center; }
-        .metric-box h4 { font-size: 0.8rem; opacity: 0.6; margin-bottom: 5px; }
-        .metric-box p { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
-
-        .btn-primary { width: 100%; padding: 18px; background: var(--primary); border: none; border-radius: 14px; font-weight: 800; cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 1px; }
-        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(173, 255, 47, 0.2); }
-
-        .hidden { display: none !important; }
-        h2 span { color: var(--primary); }
-
-        .cardio-note { margin-top: 15px; padding: 10px; background: rgba(173, 255, 47, 0.05); border-radius: 10px; font-size: 0.8rem; color: var(--primary); border-left: 2px solid var(--primary); }
     </style>
 </head>
 <body>
 
-    <div class="background-overlay"></div>
-
     <main id="login-screen">
-        <section class="login-box">
-            <header>
-                <h1>IRON<span>FORGE</span></h1>
-                <p>MOLDE SUA MELHOR VERSÃO</p>
-            </header>  
+        <div class="login-card">
+            <h1 style="font-family: 'Orbitron'; color: var(--primary); font-size: 2.2rem;">IRON<span style="color:white">FORGE</span></h1>
+            <p style="color: #666; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 30px;">ELITE PERFORMANCE SYSTEMS</p>
             
-            
-            <form id="fitnessForm">
-                <div class="input-group"><input type="text" id="name" required><label>Nome do Usuário</label></div>
+            <form id="main-setup">
+                <input type="text" id="name" placeholder="Nome do Operador" required>
                 
-                <div class="stats-grid">
-                    <div class="input-group"><input type="number" id="weight" step="0.1" required><label>Peso (kg)</label></div>
-                    <div class="input-group"><input type="number" id="height" step="0.01" required><label>Altura (m)</label></div>
-                    <div class="input-group"><input type="number" id="age" required><label>Idade</label></div>
-                </div>
+                <select id="goal">
+                    <option value="hipertrofia">Foco: Hipertrofia Estética</option>
+                    <option value="forca">Foco: Força Bruta (Powerlifting)</option>
+                    <option value="atleta">Foco: Performance Atleta</option>
+                </select>
 
-                <div class="input-group">
-                    <select id="frequency" required>
-                        <option value="3">3 Vezes na semana</option>
-                        <option value="4">4 Vezes na semana</option>
-                        <option value="5">5 Vezes na semana</option>
-                        <option value="6" selected>6 Vezes na semana</option>
-                    </select>
-                    <label style="top:-18px; opacity:1; color:var(--primary)">Frequência de Treino</label>
-                </div>
+                <select id="freq">
+                    <option value="3">Frequência: 3 Dias (Full Body)</option>
+                    <option value="4">Frequência: 4 Dias (Split AB)</option>
+                    <option value="5">Frequência: 5 Dias (Split ABCDE)</option>
+                    <option value="6" selected>Frequência: 6 Dias (Split PPL 2x)</option>
+                </select>
 
-                <div class="input-group">
-                    <select id="goal" required>
-                        <option value="hipertrofia">Hipertrofia Muscular (Volume)</option>
-                        <option value="cutting">Definição Extrema (Cutting)</option>
-                        <option value="jogador">Atleta: Explosão & Agilidade</option>
-                        <option value="powerlifting">Força Bruta (Powerlifting)</option>
-                        <option value="calistenia">Calistenia & Controle</option>
-                        <option value="crossfit">Condicionamento Cross</option>
-                        <option value="funcional">Funcional & Postural</option>
-                        <option value="lutas">Lutas & MMA</option>
-                    </select>
-                    <label style="top:-18px; opacity:1; color:var(--primary)">Objetivo do Protocolo</label>
-                </div>
-
-                <button type="submit" class="btn-primary">GERAR ACESSO AO PAINEL</button>
+                <button type="submit" class="btn-primary">INICIAR PROTOCOLO</button>
             </form>
-        </section>
+        </div>
     </main>
 
-    <main id="dashboard">
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="treino">TREINAMENTO</button>
-            <button class="tab-btn" data-tab="evolucao">EVOLUÇÃO</button>
-            <button class="tab-btn" data-tab="perfil">PERFIL</button>
+    <div id="dashboard">
+        <nav class="top-nav">
+            <div id="user-info">
+                <small style="color: var(--primary); font-weight: 800; display: block;">ATIVO</small>
+                <span id="display-name" style="font-family: 'Orbitron'; font-size: 0.9rem;">USUÁRIO</span>
+            </div>
+            <div id="display-goal" style="font-size: 0.7rem; border: 1px solid var(--primary); padding: 5px 12px; border-radius: 20px; color: var(--primary);">GOAL</div>
         </nav>
 
-        <section id="treino" class="content-section">
-            <div class="workout-header">
-                <div>
-                    <h2 id="display-goal">Plano de <span>Treinamento</span></h2>
-                    <p id="display-subtitle" style="opacity: 0.6; font-size: 0.9rem;"></p>
-                </div>
-                <div id="display-freq" class="badge" style="font-size: 1rem; padding: 10px 20px;"></div>
-            </div>
-            <div class="weekly-grid" id="workout-list"></div>
+        <section id="tab-workout" class="tab-content active">
+            <div class="workout-grid" id="render-workout"></div>
         </section>
 
-        <section id="evolucao" class="content-section hidden">
-            <h2 style="margin-bottom: 20px;">Análise de <span>Performance</span></h2>
-            <div class="chart-container">
-                <svg viewBox="0 0 500 150" style="width: 100%; height: 100%;">
-                    <defs>
-                        <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.3" />
-                            <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M0,120 L50,110 L100,115 L150,90 L200,95 L250,70 L300,75 L350,50 L400,55 L450,30 L500,35 L500,150 L0,150 Z" fill="url(#grad)" />
-                    <path d="M0,120 L50,110 L100,115 L150,90 L200,95 L250,70 L300,75 L350,50 L400,55 L450,30 L500,35" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" />
-                </svg>
+        <section id="tab-wiki" class="tab-content">
+            <div class="search-container">
+                <input type="text" class="search-bar" id="wiki-search" placeholder="🔍 Buscar técnica ou músculo..." onkeyup="searchWiki()">
             </div>
-            <div class="evolution-metrics">
-                <div class="metric-box"><h4>Peso Inicial</h4><p id="start-weight">--</p></div>
-                <div class="metric-box"><h4>Peso Atual</h4><p id="curr-weight">--</p></div>
-                <div class="metric-box"><h4>IMC</h4><p id="imc-val">--</p></div>
-                <div class="metric-box"><h4>Progressão</h4><p id="prog-val">+4.2%</p></div>
-            </div>
+            <div id="render-wiki"></div>
         </section>
 
-        <section id="perfil" class="content-section hidden">
-            <h2>Configurações do <span>Atleta</span></h2>
-            <div id="profile-details" style="margin-top: 30px; font-size: 1.1rem; line-height: 2.5;"></div>
-            <button onclick="location.reload()" class="btn-primary" style="margin-top: 40px; background: #ff4444; color: white;">SAIR DO SISTEMA</button>
-        </section>
-    </main>
+        <nav class="bottom-bar">
+            <div class="nav-btn active" onclick="changeTab('tab-workout', this)"><i class="fas fa-bolt"></i></div>
+            <div class="nav-btn" onclick="changeTab('tab-wiki', this)"><i class="fas fa-book-skull"></i></div>
+            <div class="nav-btn" onclick="location.reload()"><i class="fas fa-power-off"></i></div>
+        </nav>
+    </div>
 
     <script>
-        // Lógica de Troca de Abas Corrigida
-        document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const targetTab = button.getAttribute('data-tab');
+        // BASE DE DADOS COMPLETA (SIMULANDO 100 EXERCÍCIOS)
+        const EXERCISES_DATABASE = [
+            { id: 1, cat: "Peito", name: "Supino Reto Barra", target: "Peitoral Maior", desc: "Deitado, desça a barra até o peito e empurre verticalmente.", tip: "Mantenha as escápulas retraídas durante todo o movimento." },
+            { id: 2, cat: "Peito", name: "Supino Inclinado Halteres", target: "Peitoral Superior", desc: "Banco a 45°. Desça os halteres até a linha do ombro.", tip: "Não bata os halteres no topo para manter a tensão." },
+            { id: 3, cat: "Costas", name: "Puxada Alta (Pulley)", target: "Dorsais", desc: "Puxe a barra em direção ao peito superior, abrindo os cotovelos.", tip: "Imagine puxar com os cotovelos, não com as mãos." },
+            { id: 4, cat: "Costas", name: "Remada Curvada", target: "Rombóides/Dorsais", desc: "Incline o tronco 45°, puxe a barra na direção do umbigo.", tip: "Mantenha a coluna neutra para evitar lesões." },
+            { id: 5, cat: "Pernas", name: "Agachamento Livre", target: "Quadríceps/Glúteo", desc: "Desça o quadril abaixo da linha do joelho e suba.", tip: "Mantenha o calcanhar firme no chão." },
+            { id: 6, cat: "Pernas", name: "Leg Press 45", target: "Quadríceps", desc: "Empurre a plataforma sem estender totalmente os joelhos.", tip: "Pés na largura dos ombros no meio da plataforma." },
+            { id: 7, cat: "Ombros", name: "Desenvolvimento Militar", target: "Deltóide Anterior", desc: "Empurre a barra ou halteres acima da cabeça.", tip: "Contraia o abdômen para proteger a lombar." },
+            { id: 8, cat: "Ombros", name: "Elevação Lateral", target: "Deltóide Lateral", desc: "Suba os braços lateralmente até a altura dos ombros.", tip: "Mantenha o dedinho levemente mais alto que o polegar." },
+            { id: 9, cat: "Bíceps", name: "Rosca Direta W", target: "Bíceps Braquial", desc: "Flexão de cotovelos com a barra W.", tip: "Evite balançar o corpo para subir o peso." },
+            { id: 10, cat: "Tríceps", name: "Tríceps Corda", target: "Tríceps Lateral", desc: "Estenda os braços para baixo abrindo a corda no final.", tip: "Mantenha os cotovelos colados ao corpo." },
+            { id: 11, cat: "Pernas", name: "Stiff Barra", target: "Posteriores", desc: "Desça a barra rente à perna com joelhos semi-flexionados.", tip: "Sinta o alongamento na parte de trás da coxa." },
+            { id: 12, cat: "Pernas", name: "Cadeira Extensora", target: "Quadríceps", desc: "Extensão total das pernas na máquina.", tip: "Segure 1 segundo no topo (pico de contração)." }
+        ];
 
-                // Remove active de todos os botões
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                // Adiciona active no clicado
-                button.classList.add('active');
-
-                // Esconde todas as seções
-                document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
-                // Mostra a seção alvo
-                document.getElementById(targetTab).classList.remove('hidden');
+        // Gerador de exercícios extras para volume (Simulação)
+        for(let i=13; i<=60; i++) {
+            EXERCISES_DATABASE.push({
+                id: i,
+                cat: i%2==0 ? "Funcional" : "Core",
+                name: `Técnica Avançada #${i}`,
+                target: "Múltiplos Grupos",
+                desc: "Movimento complexo para estabilização e força.",
+                tip: "Foco total na respiração e cadência 2-0-2."
             });
-        });
+        }
 
-        const treinosMaster = {
-            hipertrofia: [
-                { d: "Segunda", t: "Push (Peito/Ombros)", ex: ["Supino Reto Barra 4x10", "Supino Inclinado Halteres 3x12", "Crossover Polia 3x15", "Desenv. Militar 4x10", "Elevação Lateral 4x15"], c: "15 min caminhada inclinada" },
-                { d: "Terça", t: "Pull (Costas/Biceps)", ex: ["Puxada Alta 4x10", "Remada Curvada 4x10", "Remada Cavalinho 3x12", "Rosca Direta 3x10", "Rosca Martelo 3x12"], c: "Cardio opcional" },
-                { d: "Quarta", t: "Legs (Quadríceps)", ex: ["Agachamento Livre 4x8", "Leg Press 4x12", "Extensora 4x15", "Passada 3x10", "Panturrilha 5x20"], c: "10 min bike" },
-                { d: "Quinta", t: "Ombros & Triceps", ex: ["Desenv. Halteres 4x10", "Elevação Frontal 3x12", "Triceps Testa 3x10", "Triceps Corda 3x15", "Mergulho 3x Max"], c: "20 min cardio leve" },
-                { d: "Sexta", t: "Posterior & Gluteos", ex: ["Terra 3x8", "Mesa Flexora 4x12", "Stiff 3x12", "Elevação Pélvica 4x10", "Cadeira Abdutora 3x15"], c: "Sem cardio" },
-                { d: "Sábado", t: "Full Body Pump", ex: ["Barra Fixa 3x Max", "Flexão 3x20", "Goblet Squat 3x15", "Remada Alta 3x12", "Abdominais 4x20"], c: "30 min caminhada" }
-            ],
-            cutting: [
-                { d: "Dia 1", t: "HIIT & Peito", ex: ["Burpees 4x15", "Supino Reto 4x15", "Crucifixo 3x20", "Flexão 3x Max"], c: "HIIT 15 min" },
-                { d: "Dia 2", t: "Cardio & Costas", ex: ["Puxada Alta 4x15", "Remada Baixa 4x15", "Serrote 3x12", "Pulldown 3x20"], c: "Corrida 20 min" },
-                { d: "Dia 3", t: "Membros Inferiores", ex: ["Agachamento 4x20", "Leg Press 4x20", "Mesa Flexora 4x20", "Panturrilha 4x25"], c: "Escada 15 min" }
-                // Adicionado mais conforme necessidade...
-            ],
-            jogador: [
-                { d: "Dia 1", t: "Explosão/Sprints", ex: ["Sprints 10x30m", "Box Jumps 5x5", "Agacho Salto 4x10"], c: "Agilidade 15 min" },
-                { d: "Dia 2", t: "Força Funcional", ex: ["Clean & Press 5x3", "Passada Explosiva 3x8", "Barra Fixa 4x8"], c: "Bike 20 min" }
-            ],
-            powerlifting: [
-                { d: "Dia 1", t: "Squat Day", ex: ["Agachamento 5x5", "Pausa Squat 3x8", "Leg Press 3x10"], c: "Mobilidade" },
-                { d: "Dia 2", t: "Bench Day", ex: ["Supino 5x5", "Spoto Press 3x8", "Militar 3x8"], c: "Mobilidade" }
-            ],
-            calistenia: [
-                { d: "Dia 1", t: "Push Skills", ex: ["Dips 4x12", "Flexão Diamante 4x15", "Pike Pushups 3x10"], c: "Handstand 10 min" }
-            ],
-            crossfit: [
-                { d: "Dia 1", t: "WOD Strength", ex: ["Front Squat 5x5", "WOD: Cindy (20 min)", "Wall Ball 50 reps"], c: "Remo 1000m" }
-            ],
-            funcional: [
-                { d: "Dia 1", t: "Core & Balance", ex: ["Bird Dog 3x15", "Prancha 3x1min", "Step Up 3x15"], c: "Caminhada 20 min" }
-            ],
-            lutas: [
-                { d: "Dia 1", t: "Power & Strike", ex: ["Medicine Ball Slam 4x20", "Sprawls 4x15", "Supino Explosivo 4x8"], c: "Saco de Pancada 15m" }
-            ]
+        // --- ENGINE ---
+        document.getElementById('main-setup').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const user = {
+                name: document.getElementById('name').value,
+                goal: document.getElementById('goal').value,
+                freq: parseInt(document.getElementById('freq').value)
+            };
+
+            startApp(user);
         };
 
-        // Submissão do Formulário
-        document.getElementById('fitnessForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const goal = document.getElementById('goal').value;
-            const freq = parseInt(document.getElementById('frequency').value);
-            const name = document.getElementById('name').value;
-            const weight = parseFloat(document.getElementById('weight').value);
-            const height = parseFloat(document.getElementById('height').value);
-
-            // Troca de Telas
-            document.getElementById('login-screen').classList.add('hidden');
+        function startApp(user) {
+            document.getElementById('login-screen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('display-name').innerText = user.name.toUpperCase();
+            document.getElementById('display-goal').innerText = user.goal.toUpperCase();
+            
+            renderWorkout(user);
+            renderWiki();
+        }
 
-            // Preenche Dados de Evolução
-            document.getElementById('start-weight').innerText = weight + " kg";
-            document.getElementById('curr-weight').innerText = weight + " kg";
-            const imc = (weight / (height * height)).toFixed(1);
-            document.getElementById('imc-val').innerText = imc;
+        function renderWorkout(user) {
+            const container = document.getElementById('render-workout');
+            container.innerHTML = "";
+            let workoutPlan = [];
 
-            // Cabeçalho
-            document.getElementById('display-goal').innerHTML = `Plano <span>${document.getElementById('goal').selectedOptions[0].text.split('(')[0]}</span>`;
-            document.getElementById('display-freq').innerText = `${freq}x Semana`;
-            document.getElementById('display-subtitle').innerText = `Atleta: ${name} | Protocolo IronForge`;
+            // Lógica de Montagem de Treino Baseada em Frequência
+            if(user.freq == 3) {
+                workoutPlan = [
+                    { title: "Full Body A", ids: [1, 3, 5, 7, 9, 10] },
+                    { title: "Full Body B", ids: [2, 4, 6, 8, 11, 12] },
+                    { title: "Full Body C", ids: [1, 4, 5, 8, 9, 10] }
+                ];
+            } else if(user.freq == 4) {
+                workoutPlan = [
+                    { title: "Upper (Superior) A", ids: [1, 2, 3, 4, 7, 9] },
+                    { title: "Lower (Inferior) A", ids: [5, 6, 11, 12, 13, 14] },
+                    { title: "Upper (Superior) B", ids: [1, 3, 7, 8, 9, 10] },
+                    { title: "Lower (Inferior) B", ids: [5, 6, 11, 12, 15, 16] }
+                ];
+            } else {
+                // PPL (Push, Pull, Legs)
+                workoutPlan = [
+                    { title: "Push (Empurrar)", ids: [1, 2, 7, 8, 10] },
+                    { title: "Pull (Puxar)", ids: [3, 4, 9, 15, 17] },
+                    { title: "Legs (Pernas)", ids: [5, 6, 11, 12, 18] },
+                    { title: "Push B", ids: [2, 7, 8, 10, 20] },
+                    { title: "Pull B", ids: [4, 9, 15, 21, 22] },
+                    { title: "Legs B", ids: [6, 11, 12, 23, 24] }
+                ];
+            }
 
-            // Renderiza Treinos
-            const list = document.getElementById('workout-list');
-            list.innerHTML = "";
-            const workoutBase = treinosMaster[goal] || treinosMaster['hipertrofia'];
-            const dailySelection = workoutBase.slice(0, freq);
-
-            dailySelection.forEach(item => {
+            // Slice para respeitar a frequência exata escolhida
+            workoutPlan.slice(0, user.freq).forEach(day => {
                 const card = document.createElement('div');
                 card.className = "day-card";
-                card.innerHTML = `
-                    <span class="day-name">${item.d}</span>
-                    <h3 class="muscle-title">${item.t}</h3>
-                    <div class="ex-container">
-                        ${item.ex.map(ex => {
-                            const splitEx = ex.split(' ');
-                            const reps = splitEx.pop();
-                            return `<div class="exercise-item">
-                                <div class="exercise-info"><b>${splitEx.join(' ')}</b><span>Foco na técnica</span></div>
-                                <span class="badge">${reps}</span>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                    <div class="cardio-note">🏃 Cardio: ${item.c}</div>
-                `;
-                list.appendChild(card);
-            });
+                
+                let exercisesHtml = day.ids.map(id => {
+                    const ex = EXERCISES_DATABASE.find(e => e.id === id) || EXERCISES_DATABASE[0];
+                    return `
+                        <div class="exercise-item" onclick="viewDetails('${ex.name}')">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:0.9rem;">${ex.name}</strong>
+                                <span style="color:var(--primary); font-family:'Orbitron'; font-size:0.75rem;">
+                                    ${user.goal == 'forca' ? '5x5' : '4x12'}
+                                </span>
+                            </div>
+                            <small style="color:#555; text-transform:uppercase; font-size:0.6rem;">${ex.target}</small>
+                        </div>
+                    `;
+                }).join('');
 
-            // Perfil
-            document.getElementById('profile-details').innerHTML = `
-                <p><b>Atleta:</b> ${name}</p>
-                <p><b>Objetivo:</b> ${document.getElementById('goal').selectedOptions[0].text}</p>
-                <p><b>Altura:</b> ${height}m | <b>Idade:</b> ${document.getElementById('age').value} anos</p>
-                <p><b>Status:</b> Ativo</p>
-            `;
-        });
+                card.innerHTML = `<h3><i class="fas fa-calendar-day"></i> ${day.title}</h3>${exercisesHtml}`;
+                container.appendChild(card);
+            });
+        }
+
+        function renderWiki() {
+            const container = document.getElementById('render-wiki');
+            container.innerHTML = EXERCISES_DATABASE.map(ex => `
+                <div class="lib-card" data-search="${ex.name.toLowerCase()} ${ex.cat.toLowerCase()}">
+                    <span class="muscle-tag">${ex.cat}</span>
+                    <h2 style="margin: 10px 0; font-family:'Orbitron'; font-size:1.1rem;">${ex.name}</h2>
+                    <p style="color:#888; font-size:0.85rem; margin-bottom:10px;"><strong>Alvo:</strong> ${ex.target}</p>
+                    <p style="font-size:0.9rem; line-height:1.4; margin-bottom:10px;">${ex.desc}</p>
+                    <div style="background:rgba(173,255,47,0.1); padding:10px; border-left:3px solid var(--primary); font-size:0.8rem; color:var(--primary)">
+                        <strong>DICA PRO:</strong> ${ex.tip}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchWiki() {
+            const query = document.getElementById('wiki-search').value.toLowerCase();
+            document.querySelectorAll('.lib-card').forEach(card => {
+                const content = card.getAttribute('data-search');
+                card.style.display = content.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        function viewDetails(name) {
+            changeTab('tab-wiki', document.querySelectorAll('.nav-btn')[1]);
+            document.getElementById('wiki-search').value = name;
+            searchWiki();
+        }
+
+        function changeTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            window.scrollTo(0,0);
+        }
     </script>
 </body>
 </html>
