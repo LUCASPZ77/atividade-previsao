@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIMBÃO FREAK | Genetic Overload</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main id="auth-container">
+        <div class="auth-card" id="login-form">
+            <h1 style="font-family: 'Orbitron'; color: var(--primary); font-size: 2.2rem;">SISTEMA<span style="color:white"> FREAK</span></h1>
+            <p style="color: #666; letter-spacing: 2px; font-size: 0.7rem; margin-bottom: 30px;">FAÇA LOGIN PARA ACESSAR</p>
+            <input type="email" placeholder="E-mail do Atleta" id="auth-email">
+            <input type="password" placeholder="Senha de Acesso" id="auth-pass">
+            <button class="btn-primary" onclick="handleLogin()">ENTRAR NO SISTEMA</button>
+            <span class="link-swap" onclick="toggleAuth()">Não tenho cadastro / Criar Perfil</span>
+        </div>
+
+        <div class="auth-card hidden" id="setup-form">
+            <h1 style="font-family: 'Orbitron'; color: var(--primary); font-size: 1.8rem;">NOVO<span style="color:white"> MONSTRO</span></h1>
+            <p style="color: #666; letter-spacing: 2px; font-size: 0.7rem; margin-bottom: 20px;">DEFINA SUA GENÉTICA</p>
+            
+            <form id="main-setup">
+                <input type="text" id="name" placeholder="Nome Completo" required>
+                <div style="display:flex; gap: 10px;">
+                    <input type="number" id="age" placeholder="Idade" required>
+                    <input type="number" id="weight" placeholder="Peso (kg)" required>
+                    <input type="number" id="height" placeholder="Altura (cm)" required>
+                </div>
+                
+                <select id="goal">
+                    <option value="hipertrofia">Objetivo: Ganho de Massa</option>
+                    <option value="forca">Objetivo: Força Bruta</option>
+                    <option value="cutting">Objetivo: Definição Extrema</option>
+                </select>
+
+                <select id="freq">
+                    <option value="3">Treino: 3 Dias (Full Body)</option>
+                    <option value="4">Treino: 4 Dias (AB)</option>
+                    <option value="6" selected>Treino: 6 Dias (PPL 2x)</option>
+                </select>
+
+                <button type="submit" class="btn-primary">GERAR PROTOCOLO</button>
+            </form>
+            <span class="link-swap" onclick="toggleAuth()">Voltar para Login</span>
+        </div>
+    </main>
+
+    <div id="dashboard">
+        <nav class="top-nav">
+            <div id="user-info">
+                <small style="color: var(--primary); font-weight: 800; display: block;">PROTOCOLO ATIVO</small>
+                <span id="display-name" style="font-family: 'Orbitron'; font-size: 0.9rem;">USUÁRIO</span>
+            </div>
+            <div id="display-goal" style="font-size: 0.7rem; border: 1px solid var(--primary); padding: 5px 12px; border-radius: 20px; color: var(--primary);">GOAL</div>
+        </nav>
+
+        <section id="tab-workout" class="tab-content active">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 20px;">SEU <span style="color:var(--primary)">TREINO</span></h2>
+            <div class="workout-grid" id="render-workout"></div>
+        </section>
+
+        <section id="tab-diet" class="tab-content">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 10px; color: var(--primary);">DIETA ESTRATÉGICA</h2>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px;">Calculado com base no seu metabolismo basal e fator de atividade.</p>
+            
+            <div id="diet-result">
+                <div class="diet-grid">
+                    <div class="macro-card"><span class="macro-label">Calorias Diárias</span><span class="macro-val" id="d-cal">0</span><small>kcal</small></div>
+                    <div class="macro-card"><span class="macro-label">Proteína</span><span class="macro-val" id="d-prot">0</span><small>g</small></div>
+                    <div class="macro-card"><span class="macro-label">Carbo</span><span class="macro-val" id="d-carb">0</span><small>g</small></div>
+                    <div class="macro-card"><span class="macro-label">Gordura</span><span class="macro-val" id="d-fat">0</span><small>g</small></div>
+                </div>
+
+                <div class="lib-card" style="margin-top: 30px;">
+                    <h3 style="font-family: 'Orbitron'; color: var(--primary); margin-bottom: 15px;">Sugestão de Cardápio</h3>
+                    <div id="meal-plan" style="font-size: 0.9rem; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-stats" class="tab-content">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: var(--primary);">EVOLUTION TRACKER</h2>
+            <div class="evolution-form">
+                <div class="input-box" style="flex: 2; min-width: 200px;">
+                    <label>Exercício</label>
+                    <select id="log-exercise" style="margin-top:0; padding: 14px;"></select>
+                </div>
+                <div class="input-box">
+                    <label>Carga (kg)</label>
+                    <input type="number" id="log-bench" placeholder="0" style="margin-top:0">
+                </div>
+                <div class="input-box">
+                    <label>Peso Corporal (kg)</label>
+                    <input type="number" id="log-mass" placeholder="0" style="margin-top:0">
+                </div>
+                <button onclick="updateEvolution()" class="btn-primary" style="margin-top:0; padding: 15px; width: auto; flex: 1;">REGISTRAR</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="chart-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Progresso de Força</h3>
+                        <select id="filter-chart-exercise" onchange="renderCharts()" style="width: auto; margin-top:0; padding: 5px; font-size: 0.7rem;"></select>
+                    </div>
+                    <div class="bar-wrapper" id="chart-load"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Evolução de Massa (Anual)</h3>
+                    <div class="bar-wrapper" id="chart-mass"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-wiki" class="tab-content">
+            <div class="search-container">
+                <input type="text" class="search-bar" id="wiki-search" placeholder="🔍 Buscar técnica ou músculo..." onkeyup="searchWiki()">
+            </div>
+            <div id="render-wiki"></div>
+        </section>
+
+        <nav class="bottom-bar">
+            <div class="nav-btn active" onclick="changeTab('tab-workout', this)"><i class="fas fa-bolt"></i></div>
+            <div class="nav-btn" onclick="changeTab('tab-diet', this)"><i class="fas fa-utensils"></i></div>
+            <div class="nav-btn" onclick="changeTab('tab-stats', this)"><i class="fas fa-chart-line"></i></div>
+            <div class="nav-btn" onclick="changeTab('tab-wiki', this)"><i class="fas fa-book-skull"></i></div>
+            <div class="nav-btn" onclick="location.reload()"><i class="fas fa-power-off"></i></div>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
